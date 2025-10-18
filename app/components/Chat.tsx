@@ -1,4 +1,4 @@
-import React, { SetStateAction } from "react";
+import React, { SetStateAction, useState } from "react";
 import { LiaTelegram } from "react-icons/lia";
 import { RxCross2 } from "react-icons/rx";
 
@@ -6,37 +6,37 @@ interface ChatProps {
   setisToggle: React.Dispatch<SetStateAction<boolean>>;
 }
 
+const hoverHandler = (e: MouseEvent) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  document.querySelectorAll(".hovered-element").forEach((el) => {
+    (el as HTMLElement).style.border = "";
+    (el as HTMLElement).style.borderRadius = "";
+    el.classList.remove("hovered-element");
+  });
+
+  const targetElement = e.target as HTMLElement;
+  if (
+    !targetElement ||
+    !(targetElement instanceof HTMLElement) ||
+    targetElement.hasAttribute("lang") ||
+    targetElement.classList.contains("geist_a71539c9-module__T19VSG__variable")
+  ) {
+    return;
+  }
+
+  targetElement.style.border = "2px solid #00f";
+  targetElement.style.borderRadius = "10px";
+  targetElement.classList.add("hovered-element");
+
+  document.removeEventListener("click", hoverHandler, true);
+};
+
 export default function Chat({ setisToggle }: ChatProps) {
+  const [isSelect, setisSelect] = useState<boolean>(false);
+
   const handleSelectPageArea = () => {
-    const hoverHandler = (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      document.querySelectorAll(".hovered-element").forEach((el) => {
-        (el as HTMLElement).style.border = "";
-        (el as HTMLElement).style.borderRadius = "";
-        el.classList.remove("hovered-element");
-      });
-
-      const targetElement = e.target as HTMLElement;
-      if (
-        !targetElement ||
-        !(targetElement instanceof HTMLElement) ||
-        targetElement.hasAttribute("lang") ||
-        targetElement.classList.contains(
-          "geist_a71539c9-module__T19VSG__variable"
-        )
-      ) {
-        return;
-      }
-
-      targetElement.style.border = "2px solid #00f";
-      targetElement.style.borderRadius = "10px";
-      targetElement.classList.add("hovered-element");
-
-      document.removeEventListener("click", hoverHandler, true);
-    };
-
     document.addEventListener("mouseenter", hoverHandler, true);
   };
 
@@ -61,12 +61,24 @@ export default function Chat({ setisToggle }: ChatProps) {
       <div className="bg-black h-[40vh] overflow-y-scroll"></div>
 
       <div className="bg-[#111827] p-5  space-y-3 rounded-b-xl">
-        <button
-          onClick={handleSelectPageArea}
-          className="w-full bg-white text-black py-2 rounded-lg"
-        >
-          Select Page
-        </button>
+        {isSelect ? (
+          <button
+            onClick={() => {}}
+            className="w-full bg-violet-500 text-black py-2 rounded-lg"
+          >
+            Cancel Select
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              handleSelectPageArea();
+              setisSelect(true);
+            }}
+            className="w-full bg-white text-black py-2 rounded-lg"
+          >
+            Select Page
+          </button>
+        )}
         <div className="w-full flex items-center space-x-2 ">
           <input
             type="text"
