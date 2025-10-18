@@ -1,7 +1,12 @@
+import React, { SetStateAction } from "react";
 import { LiaTelegram } from "react-icons/lia";
 import { RxCross2 } from "react-icons/rx";
 
-export default function Chat() {
+interface ChatProps {
+  setisToggle: React.Dispatch<SetStateAction<boolean>>;
+}
+
+export default function Chat({ setisToggle }: ChatProps) {
   return (
     <div className="bg-gradient-to-r from-[#334155]  to-[#0f172a] rounded-xl">
       <div className=" flex justify-between w-[20vw] p-5 ">
@@ -10,7 +15,14 @@ export default function Chat() {
           <h1>Text Editor</h1>
         </div>
         <div>
-          <RxCross2 size={20} color="white" cursor={"pointer"} />
+          <RxCross2
+            size={20}
+            color="white"
+            cursor={"pointer"}
+            onClick={() => {
+              setisToggle(false);
+            }}
+          />
         </div>
       </div>
       <div className="bg-black h-[40vh] overflow-y-scroll"></div>
