@@ -7,6 +7,39 @@ interface ChatProps {
 }
 
 export default function Chat({ setisToggle }: ChatProps) {
+  const handleSelectPageArea = () => {
+    const hoverHandler = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      document.querySelectorAll(".hovered-element").forEach((el) => {
+        (el as HTMLElement).style.border = "";
+        (el as HTMLElement).style.borderRadius = "";
+        el.classList.remove("hovered-element");
+      });
+
+      const targetElement = e.target as HTMLElement;
+      if (
+        !targetElement ||
+        !(targetElement instanceof HTMLElement) ||
+        targetElement.hasAttribute("lang") ||
+        targetElement.classList.contains(
+          "geist_a71539c9-module__T19VSG__variable"
+        )
+      ) {
+        return;
+      }
+
+      targetElement.style.border = "2px solid #00f";
+      targetElement.style.borderRadius = "10px";
+      targetElement.classList.add("hovered-element");
+
+      document.removeEventListener("click", hoverHandler, true);
+    };
+
+    document.addEventListener("mouseenter", hoverHandler, true);
+  };
+
   return (
     <div className="bg-gradient-to-r from-[#334155]  to-[#0f172a] rounded-xl">
       <div className=" flex justify-between w-[20vw] p-5 ">
@@ -28,7 +61,10 @@ export default function Chat({ setisToggle }: ChatProps) {
       <div className="bg-black h-[40vh] overflow-y-scroll"></div>
 
       <div className="bg-[#111827] p-5  space-y-3 rounded-b-xl">
-        <button className="w-full bg-white text-black py-2 rounded-lg">
+        <button
+          onClick={handleSelectPageArea}
+          className="w-full bg-white text-black py-2 rounded-lg"
+        >
           Select Page
         </button>
         <div className="w-full flex items-center space-x-2 ">
