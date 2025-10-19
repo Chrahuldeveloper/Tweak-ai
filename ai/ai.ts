@@ -23,10 +23,23 @@ export default {
     }
 
     try {
-      // const { prompt } = await request.json();
+      const { message, code } = await request.json();
 
       const aiResponse = await env.AI.run("@cf/meta/llama-3-8b-instruct", {
-        prompt: `Write only the JavaScript code to add two numbers. No explanation, no comments, no text — just the code.`,
+        prompt: `
+You are a coding assistant.
+The user will provide a request to create or modify code.
+You must respond with ONLY the exact code — no explanations, no extra text, no comments, no markdown formatting.
+Do not include phrases like "Here is the code" or any descriptive text.
+If the user input includes code, modify or generate the required code as instructed.
+Always output only valid, runnable code — nothing else.
+
+User message:
+${message}
+
+User request:
+${code}
+`,
       });
 
       const responseContent = {
