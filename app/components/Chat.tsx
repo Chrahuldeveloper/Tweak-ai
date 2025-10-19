@@ -1,4 +1,4 @@
-import React, { SetStateAction, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { LiaTelegram } from "react-icons/lia";
 import { RxCross2 } from "react-icons/rx";
 
@@ -6,44 +6,83 @@ interface ChatProps {
   setisToggle: React.Dispatch<SetStateAction<boolean>>;
 }
 
-const hoverHandler = (e: MouseEvent) => {
-  e.preventDefault();
-  e.stopPropagation();
-
-  document.querySelectorAll(".hovered-element").forEach((el) => {
-    (el as HTMLElement).style.border = "";
-    (el as HTMLElement).style.borderRadius = "";
-    el.classList.remove("hovered-element");
-  });
-
-  const targetElement = e.target as HTMLElement;
-  if (
-    !targetElement ||
-    !(targetElement instanceof HTMLElement) ||
-    targetElement.hasAttribute("lang") ||
-    targetElement.classList.contains("geist_a71539c9-module__T19VSG__variable")
-  ) {
-    return;
-  }
-
-  targetElement.style.border = "2px solid #00f";
-  targetElement.style.borderRadius = "10px";
-  targetElement.classList.add("hovered-element");
-
-  document.removeEventListener("click", hoverHandler, true);
-};
-
 export default function Chat({ setisToggle }: ChatProps) {
   const [isSelect, setisSelect] = useState<boolean>(false);
+  const [selectedElements, setSelectedElements] = useState<HTMLElement[]>([]);
+  const [hoveredEl, setHoveredEl] = useState<HTMLElement | null>(null);
+
+  const hoverHandler = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (
+      !target ||
+      target.hasAttribute("lang") ||
+      target.classList.contains("geist_a71539c9-module__T19VSG__variable")
+    )
+      return;
+
+    if (hoveredEl && !selectedElements.includes(hoveredEl)) {
+      hoveredEl.style.border = "";
+      hoveredEl.style.borderRadius = "";
+    }
+
+    if (!selectedElements.includes(target)) {
+      target.style.border = "2px solid #00f";
+      target.style.borderRadius = "10px";
+      setHoveredEl(target);
+    }
+  };
+
+  const clickHandler = (e: MouseEvent) => {
+    const target = e.target as HTMLElement;
+    if (
+      !target ||
+      target.hasAttribute("lang") ||
+      target.classList.contains("geist_a71539c9-module__T19VSG__variable")
+    )
+      return;
+
+    if (!selectedElements.includes(target)) {
+      target.style.border = "2px solid red";
+      target.style.borderRadius = "10px";
+      setSelectedElements((prev) => [...prev, target]);
+    }
+  };
 
   const handleSelectPageArea = () => {
-    document.addEventListener("mouseenter", hoverHandler, true);
+    document.addEventListener("mouseover", hoverHandler, true);
+    document.addEventListener("click", clickHandler, true);
+    setisSelect(true);
   };
+
+  const handleRemoveEventListener = () => {
+    document.removeEventListener("mouseover", hoverHandler, true);
+    document.removeEventListener("click", clickHandler, true);
+
+    if (hoveredEl) {
+      hoveredEl.style.border = "";
+      hoveredEl.style.borderRadius = "";
+    }
+    selectedElements.forEach((el) => {
+      el.style.border = "";
+      el.style.borderRadius = "";
+    });
+
+    setHoveredEl(null);
+    setSelectedElements([]);
+    setisSelect(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      document.removeEventListener("mouseover", hoverHandler, true);
+      document.removeEventListener("click", clickHandler, true);
+    };
+  }, []);
 
   return (
     <div className="bg-gradient-to-r from-[#334155]  to-[#0f172a] rounded-xl">
-      <div className=" flex justify-between w-[20vw] p-5 ">
-        <div className=" text-white flex items-center space-x-2">
+      <div className="flex justify-between w-[20vw] p-5">
+        <div className="text-white flex items-center space-x-2">
           <LiaTelegram color="white" size={20} />
           <h1>Text Editor</h1>
         </div>
@@ -52,34 +91,31 @@ export default function Chat({ setisToggle }: ChatProps) {
             size={20}
             color="white"
             cursor={"pointer"}
-            onClick={() => {
-              setisToggle(false);
-            }}
+            onClick={() => setisToggle(false)}
           />
         </div>
       </div>
+
       <div className="bg-black h-[40vh] overflow-y-scroll"></div>
 
-      <div className="bg-[#111827] p-5  space-y-3 rounded-b-xl">
+      <div className="bg-[#111827] p-5 space-y-3 rounded-b-xl">
         {isSelect ? (
           <button
-            onClick={() => {}}
+            onClick={handleRemoveEventListener}
             className="w-full bg-violet-500 text-black py-2 rounded-lg"
           >
             Cancel Select
           </button>
         ) : (
           <button
-            onClick={() => {
-              handleSelectPageArea();
-              setisSelect(true);
-            }}
+            onClick={handleSelectPageArea}
             className="w-full bg-white text-black py-2 rounded-lg"
           >
             Select Page
           </button>
         )}
-        <div className="w-full flex items-center space-x-2 ">
+
+        <div className="w-full flex items-center space-x-2">
           <input
             type="text"
             placeholder="Type Message"
