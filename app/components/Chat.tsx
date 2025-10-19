@@ -1,6 +1,8 @@
 import React, { SetStateAction, useEffect, useState } from "react";
 import { LiaTelegram } from "react-icons/lia";
 import { RxCross2 } from "react-icons/rx";
+import { FaRobot } from "react-icons/fa";
+import { CgProfile } from "react-icons/cg";
 
 interface ChatProps {
   setisToggle: React.Dispatch<SetStateAction<boolean>>;
@@ -39,13 +41,10 @@ export default function Chat({ setisToggle }: ChatProps) {
     if (
       !target ||
       target.hasAttribute("lang") ||
-      target.classList.contains("geist_a71539c9-module__T19VSG__variable")
+      target.classList.contains("geist_a71539c9-module__T19VSG__variable") ||
+      target.closest("#chatUi")
     )
       return;
-
-    if (target.id == "chatUi") {
-      return;
-    }
 
     if (!selectedElements.includes(target)) {
       target.style.border = "2px solid red";
@@ -105,7 +104,51 @@ export default function Chat({ setisToggle }: ChatProps) {
         </div>
       </div>
 
-      <div className="bg-black h-[40vh] overflow-y-scroll"></div>
+      <div className="bg-black h-[40vh] overflow-y-scroll">
+        <div className="flex flex-col ">
+          {selectedElements.map((i, id) => {
+            return (
+              <>
+                <div
+                  key={id}
+                  className="flex items-center space-x-3 p-3 w-full"
+                >
+                  <FaRobot
+                    className="bg-gradient-to-r from-[#334155]  to-[#0f172a]  w-12 h-12 p-2.5 rounded-full"
+                    size={20}
+                    color="white"
+                  />
+                  <p className="bg-gradient-to-r from-[#334155]  to-[#0f172a] text-slate-100  text-sm w-80 p-5 rounded-xl">
+                    {i.outerHTML.toString()}
+                  </p>
+                </div>
+              </>
+            );
+          })}
+        </div>
+
+        <div className="flex flex-col ">
+          {selectedElements.map((i, id) => {
+            return (
+              <>
+                <div
+                  key={id}
+                  className="flex items-center space-x-3 p-3 w-full"
+                >
+                  <p className="bg-gradient-to-r from-[#334155]  to-[#0f172a] text-slate-100  text-sm w-80 p-5 rounded-xl">
+                    {"make it like"}
+                  </p>
+                  <CgProfile
+                    className="bg-gradient-to-r from-[#334155]  to-[#0f172a] w-12 h-12 p-2.5 rounded-full" 
+                    size={20}
+                    color="white"
+                  />
+                </div>
+              </>
+            );
+          })}
+        </div>
+      </div>
 
       <div className="bg-[#111827] p-5 space-y-3 rounded-b-xl">
         {isSelect ? (
