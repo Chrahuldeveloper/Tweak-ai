@@ -8,10 +8,21 @@ interface ChatProps {
   setisToggle: React.Dispatch<SetStateAction<boolean>>;
 }
 
+interface UserRequest {
+  code: string;
+  message: string;
+}
+
 export default function Chat({ setisToggle }: ChatProps) {
   const [isSelect, setisSelect] = useState<boolean>(false);
   const [selectedElements, setSelectedElements] = useState<HTMLElement[]>([]);
   const [hoveredEl, setHoveredEl] = useState<HTMLElement | null>(null);
+  const [inputMessage, setInputMessage] = useState<string>("");
+
+  const [request, setRequest] = useState<UserRequest>({
+    code: "",
+    message: "",
+  });
 
   const hoverHandler = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -84,10 +95,40 @@ export default function Chat({ setisToggle }: ChatProps) {
     };
   }, []);
 
+  const handleSendRequest = async () => {
+    if (selectedElements.length === 0 || !inputMessage.trim()) return;
+
+    const selectedEl = selectedElements[selectedElements.length - 1];
+
+    const req: UserRequest = {
+      message: inputMessage,
+      code: selectedEl.outerHTML,
+    };
+
+    setRequest(req);
+
+    try {
+      const sendReq = await fetch(
+        "https://tweakai.chrahulofficial.workers.dev",
+        {
+          method: "POST",
+          body: JSON.stringify(req),
+        }
+      );
+
+      const data = await sendReq.json();
+      console.log("AI Response:", data);
+    } catch (error) {
+      console.log(error);
+    }
+
+    setInputMessage("");
+  };
+
   return (
     <div
       id="chatUi"
-      className="bg-gradient-to-r from-[#334155]  to-[#0f172a] rounded-xl"
+      className="bg-gradient-to-r from-[#334155] to-[#0f172a] rounded-xl"
     >
       <div className="flex justify-between w-[20vw] p-5">
         <div className="text-white flex items-center space-x-2">
@@ -105,48 +146,32 @@ export default function Chat({ setisToggle }: ChatProps) {
       </div>
 
       <div className="bg-black h-[40vh] overflow-y-scroll">
-        <div className="flex flex-col ">
-          {selectedElements.map((i, id) => {
-            return (
-              <>
-                <div
-                  key={id}
-                  className="flex items-center space-x-3 p-3 w-full"
-                >
-                  <FaRobot
-                    className="bg-gradient-to-r from-[#334155]  to-[#0f172a]  w-12 h-12 p-2.5 rounded-full"
-                    size={20}
-                    color="white"
-                  />
-                  <p className="bg-gradient-to-r from-[#334155]  to-[#0f172a] text-slate-100  text-sm w-80 p-5 rounded-xl">
-                    {i.outerHTML.toString()}
-                  </p>
-                </div>
-              </>
-            );
-          })}
-        </div>
+        <div className="flex flex-col">
+          {selectedElements.map((el, id) => (
+            <div key={id} className="flex items-center space-x-3 p-3 w-full">
+              <FaRobot
+                className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
+                size={20}
+                color="white"
+              />
+              <p className="bg-gradient-to-r from-[#334155] to-[#0f172a] text-slate-100 text-sm w-80 p-5 rounded-xl">
+                {el.outerHTML.toString()}
+              </p>
+            </div>
+          ))}
 
-        <div className="flex flex-col ">
-          {selectedElements.map((i, id) => {
-            return (
-              <>
-                <div
-                  key={id}
-                  className="flex items-center space-x-3 p-3 w-full"
-                >
-                  <p className="bg-gradient-to-r from-[#334155]  to-[#0f172a] text-slate-100  text-sm w-80 p-5 rounded-xl">
-                    {"make it like"}
-                  </p>
-                  <CgProfile
-                    className="bg-gradient-to-r from-[#334155]  to-[#0f172a] w-12 h-12 p-2.5 rounded-full" 
-                    size={20}
-                    color="white"
-                  />
-                </div>
-              </>
-            );
-          })}
+          {request.message && (
+            <div className="flex items-center space-x-3 justify-end p-3 w-full">
+              <p className="bg-gradient-to-r from-[#334155] to-[#0f172a] text-slate-100 text-sm w-72 p-5 rounded-xl text-left">
+                {request.message}
+              </p>
+              <CgProfile
+                className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
+                size={20}
+                color="white"
+              />
+            </div>
+          )}
         </div>
       </div>
 
@@ -171,12 +196,15 @@ export default function Chat({ setisToggle }: ChatProps) {
           <input
             type="text"
             placeholder="Type Message"
-            className="bg-[#1f2937] border-[1px] border-slate-800 text-white rounded-lg px-2 py-2 outline-none w-full"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            className="bg-[#1f2937] border border-slate-800 text-white rounded-lg px-2 py-2 outline-none w-full"
           />
           <LiaTelegram
+            onClick={handleSendRequest}
             size={20}
             color="white"
-            className="bg-[#462a8a] p-2 w-10 h-10 rounded-xl"
+            className="bg-[#462a8a] p-2 w-10 h-10 rounded-xl cursor-pointer"
           />
         </div>
       </div>
