@@ -16,9 +16,11 @@ export default function Chat({ setisToggle }: ChatProps) {
     if (
       !target ||
       target.hasAttribute("lang") ||
-      target.classList.contains("geist_a71539c9-module__T19VSG__variable")
-    )
+      target.classList.contains("geist_a71539c9-module__T19VSG__variable") ||
+      target.closest("#chatUi")
+    ) {
       return;
+    }
 
     if (hoveredEl && !selectedElements.includes(hoveredEl)) {
       hoveredEl.style.border = "";
@@ -40,6 +42,10 @@ export default function Chat({ setisToggle }: ChatProps) {
       target.classList.contains("geist_a71539c9-module__T19VSG__variable")
     )
       return;
+
+    if (target.id == "chatUi") {
+      return;
+    }
 
     if (!selectedElements.includes(target)) {
       target.style.border = "2px solid red";
@@ -80,7 +86,10 @@ export default function Chat({ setisToggle }: ChatProps) {
   }, []);
 
   return (
-    <div className="bg-gradient-to-r from-[#334155]  to-[#0f172a] rounded-xl">
+    <div
+      id="chatUi"
+      className="bg-gradient-to-r from-[#334155]  to-[#0f172a] rounded-xl"
+    >
       <div className="flex justify-between w-[20vw] p-5">
         <div className="text-white flex items-center space-x-2">
           <LiaTelegram color="white" size={20} />
