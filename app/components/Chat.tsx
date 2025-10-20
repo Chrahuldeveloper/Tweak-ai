@@ -8,9 +8,9 @@ interface ChatProps {
   setisToggle: React.Dispatch<SetStateAction<boolean>>;
 }
 
-interface UserRequest {
-  code: string;
-  message: string;
+interface ChatMessage {
+  sender: "user" | "bot";
+  content: string;
 }
 
 export default function Chat({ setisToggle }: ChatProps) {
@@ -19,10 +19,7 @@ export default function Chat({ setisToggle }: ChatProps) {
   const [hoveredEl, setHoveredEl] = useState<HTMLElement | null>(null);
   const [inputMessage, setInputMessage] = useState<string>("");
 
-  const [request, setRequest] = useState<UserRequest>({
-    code: "",
-    message: "",
-  });
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
 
   const hoverHandler = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -61,6 +58,14 @@ export default function Chat({ setisToggle }: ChatProps) {
       target.style.border = "2px solid red";
       target.style.borderRadius = "10px";
       setSelectedElements((prev) => [...prev, target]);
+
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          sender: "bot",
+          content: target.outerHTML.toString(),
+        },
+      ]);
     }
   };
 
@@ -96,16 +101,23 @@ export default function Chat({ setisToggle }: ChatProps) {
   }, []);
 
   const handleSendRequest = async () => {
+    setInputMessage("");
+
     if (selectedElements.length === 0 || !inputMessage.trim()) return;
 
     const selectedEl = selectedElements[selectedElements.length - 1];
 
-    const req: UserRequest = {
+    const userMsg: ChatMessage = {
+      sender: "user",
+      content: inputMessage,
+    };
+
+    setChatHistory((prev) => [...prev, userMsg]);
+
+    const req = {
       message: inputMessage,
       code: selectedEl.outerHTML,
     };
-
-    setRequest(req);
 
     try {
       const sendReq = await fetch(
@@ -115,9 +127,14 @@ export default function Chat({ setisToggle }: ChatProps) {
           body: JSON.stringify(req),
         }
       );
-
       const data = await sendReq.json();
-      console.log("AI Response:", data);
+
+      const botMsg: ChatMessage = {
+        sender: "bot",
+        content: data?.response || selectedEl.outerHTML.toString(),
+      };
+
+      setChatHistory((prev) => [...prev, botMsg]);
     } catch (error) {
       console.log(error);
     }
@@ -128,9 +145,9 @@ export default function Chat({ setisToggle }: ChatProps) {
   return (
     <div
       id="chatUi"
-      className="bg-gradient-to-r from-[#334155] to-[#0f172a] rounded-xl"
+      className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-96 rounded-xl"
     >
-      <div className="flex justify-between w-[20vw] p-5">
+      <div className="flex justify-between  p-5">
         <div className="text-white flex items-center space-x-2">
           <LiaTelegram color="white" size={20} />
           <h1>Text Editor</h1>
@@ -146,32 +163,35 @@ export default function Chat({ setisToggle }: ChatProps) {
       </div>
 
       <div className="bg-black h-[40vh] overflow-y-scroll">
-        <div className="flex flex-col">
-          {selectedElements.map((el, id) => (
-            <div key={id} className="flex items-center space-x-3 p-3 w-full">
-              <FaRobot
-                className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
-                size={20}
-                color="white"
-              />
-              <p className="bg-gradient-to-r from-[#334155] to-[#0f172a] text-slate-100 text-sm w-80 p-5 rounded-xl">
-                {el.outerHTML.toString()}
+        <div className="flex flex-col space-y-3 p-3">
+          {chatHistory.map((msg, index) => (
+            <div
+              key={index}
+              className={`flex items-center space-x-3 w-full ${
+                msg.sender === "user" ? "justify-end" : "justify-start"
+              }`}
+            >
+              {msg.sender === "bot" && (
+                <FaRobot
+                  className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
+                  color="white"
+                />
+              )}
+              <p
+                className={`bg-gradient-to-r from-[#334155] to-[#0f172a] text-slate-100 text-sm p-4 rounded-xl max-w-[75%] break-words ${
+                  msg.sender === "user" ? "text-right" : "text-left"
+                }`}
+              >
+                {msg.content}
               </p>
+              {msg.sender === "user" && (
+                <CgProfile
+                  className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
+                  color="white"
+                />
+              )}
             </div>
           ))}
-
-          {request.message && (
-            <div className="flex items-center space-x-3 justify-end p-3 w-full">
-              <p className="bg-gradient-to-r from-[#334155] to-[#0f172a] text-slate-100 text-sm w-72 p-5 rounded-xl text-left">
-                {request.message}
-              </p>
-              <CgProfile
-                className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
-                size={20}
-                color="white"
-              />
-            </div>
-          )}
         </div>
       </div>
 

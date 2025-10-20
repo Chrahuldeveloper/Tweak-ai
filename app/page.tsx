@@ -9,7 +9,6 @@ export default function Home() {
     <PageIcon/>
 
 
-
      <div className="mt-28 bg-green-500">
       <h1 className="text-orange-700">THIS IS A TEXT HERE </h1>
     </div>
