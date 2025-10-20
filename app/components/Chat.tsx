@@ -143,10 +143,7 @@ export default function Chat({ setisToggle }: ChatProps) {
   };
 
   return (
-    <div
-      id="chatUi"
-      className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-96 rounded-xl"
-    >
+    <div className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-96 rounded-xl">
       <div className="flex justify-between  p-5">
         <div className="text-white flex items-center space-x-2">
           <LiaTelegram color="white" size={20} />

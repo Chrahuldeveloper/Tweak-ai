@@ -8,7 +8,7 @@ export default function PageIcon() {
 
   return (
     <>
-      <div className="fixed bottom-5 right-7 ">
+      <div  id="chatUi" className="fixed bottom-5 right-7 ">
         {isToggle && (
           <div className="animate-slideUp">
             <Chat setisToggle={setisToggle} />
