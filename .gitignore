@@ -3,7 +3,6 @@
 
 # dependencies
 /node_modules
-/ai
 /.pnp
 .pnp.*
 .yarn/*
@@ -21,6 +20,8 @@
 
 # production
 /build
+/ai
+
 
 # misc
 .DS_Store
