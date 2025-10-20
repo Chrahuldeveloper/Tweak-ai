@@ -3,7 +3,7 @@ import PageIcon from "./components/PageIcon";
 
 export default function Home() {
   return (
-    <div className="w-[95vw]">
+    <div className="">
       <PageIcon />
     </div>
   );
