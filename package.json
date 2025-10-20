@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build --turbopack && node build.js",
     "start": "next start",
-    "export": "next export"
+    "export": "next export",
+    "build:ext": "esbuild public/content.tsx --bundle --outfile=public/content.js --platform=browser --loader:.tsx=tsx --format=iife"
   },
   "dependencies": {
+    "glob": "^11.0.3",
     "next": "15.5.4",
     "react": "19.1.0",
     "react-dom": "19.1.0",

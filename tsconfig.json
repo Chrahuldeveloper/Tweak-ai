@@ -34,7 +34,7 @@
     ".next/types/**/*.ts",
     "next-env.d.ts",
     "build/types/**/*.ts"
-  ],
+, "build/background.js"  ],
   "exclude": [
     "node_modules"
   ]

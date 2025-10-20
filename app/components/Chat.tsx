@@ -1,19 +1,14 @@
-import React, { SetStateAction, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LiaTelegram } from "react-icons/lia";
-import { RxCross2 } from "react-icons/rx";
 import { FaRobot } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
-
-interface ChatProps {
-  setisToggle: React.Dispatch<SetStateAction<boolean>>;
-}
 
 interface ChatMessage {
   sender: "user" | "bot";
   content: string;
 }
 
-export default function Chat({ setisToggle }: ChatProps) {
+export default function Chat() {
   const [isSelect, setisSelect] = useState<boolean>(false);
   const [selectedElements, setSelectedElements] = useState<HTMLElement[]>([]);
   const [hoveredEl, setHoveredEl] = useState<HTMLElement | null>(null);
@@ -143,19 +138,11 @@ export default function Chat({ setisToggle }: ChatProps) {
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-96 rounded-xl">
+    <div className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-[95vw] rounded-xl">
       <div className="flex justify-between  p-5">
         <div className="text-white flex items-center space-x-2">
           <LiaTelegram color="white" size={20} />
           <h1>Text Editor</h1>
-        </div>
-        <div>
-          <RxCross2
-            size={20}
-            color="white"
-            cursor={"pointer"}
-            onClick={() => setisToggle(false)}
-          />
         </div>
       </div>
 
