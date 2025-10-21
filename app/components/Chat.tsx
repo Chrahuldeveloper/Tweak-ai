@@ -13,8 +13,34 @@ export default function Chat() {
   const [selectedElements, setSelectedElements] = useState<HTMLElement[]>([]);
   const [hoveredEl, setHoveredEl] = useState<HTMLElement | null>(null);
   const [inputMessage, setInputMessage] = useState<string>("");
-
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const insertElementIntoDom = (
+    oldCode: HTMLElement,
+    newCode: string | HTMLElement | null
+  ) => {
+    if (!oldCode || !newCode) {
+      return;
+    }
+
+    let newEl: HTMLElement | null = null;
+
+    if (typeof newCode === "string") {
+      const temp = document.createElement("div");
+      temp.innerHTML = newCode.trim();
+      newEl = temp.firstElementChild as HTMLElement | null;
+    } else if (newCode instanceof HTMLElement) {
+      newEl = newCode;
+    }
+
+    if (!newEl) {
+      console.error("No valid element created from newCode.");
+      return;
+    }
+
+    oldCode.replaceWith(newEl);
+  };
 
   const hoverHandler = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -130,6 +156,9 @@ export default function Chat() {
       };
 
       setChatHistory((prev) => [...prev, botMsg]);
+      console.log(selectedEl);
+      console.log(botMsg.content);
+      insertElementIntoDom(selectedEl, botMsg.content);
     } catch (error) {
       console.log(error);
     }
@@ -151,7 +180,7 @@ export default function Chat() {
           {chatHistory.map((msg, index) => (
             <div
               key={index}
-              className={`flex items-center space-x-3 w-full ${
+              className={`flex items-start space-x-3 w-full ${
                 msg.sender === "user" ? "justify-end" : "justify-start"
               }`}
             >

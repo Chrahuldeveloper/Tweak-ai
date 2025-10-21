@@ -1,16 +1,15 @@
+const fs = require("fs");
+const glob = require("glob");
 
-const fs = require('fs');
-const glob = require('glob');
-
-const files = glob.sync('build/**/*.html');
+const files = glob.sync("build/**/*.html");
 files.forEach((file) => {
-  const content = fs.readFileSync(file, 'utf-8');
-  const modifiedContent = content.replace(/\/_next/g, './next');
-  fs.writeFileSync(file, modifiedContent, 'utf-8');
+  const content = fs.readFileSync(file, "utf-8");
+  const modifiedContent = content.replace(/\/_next/g, "./next");
+  fs.writeFileSync(file, modifiedContent, "utf-8");
 });
 
-const sourcePath = 'build/_next';
-const destinationPath = 'build/next';
+const sourcePath = "build/_next";
+const destinationPath = "build/next";
 
 fs.rename(sourcePath, destinationPath, (err) => {
   if (err) {

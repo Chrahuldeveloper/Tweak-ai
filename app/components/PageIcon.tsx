@@ -1,9 +1,39 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Chat from "./Chat";
 
 export default function PageIcon() {
   const [isToggled, setIsToggled] = useState<boolean>(false);
+  const chatRef = useRef<HTMLDivElement | null>(null);
+  const [position, setPosition] = useState({ x: 100, y: 100 });
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    const chat = chatRef.current;
+    if (!chat) {
+      return;
+    }
+
+    const box = chat.getBoundingClientRect();
+    const offsetX = e.clientX - box.left;
+    const offsetY = e.clientY - box.top;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      setIsDragging(false);
+      setPosition({
+        x: e.clientX - offsetX,
+        y: e.clientY - offsetY,
+      });
+    };
+
+    const handleMouseUp = () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+  };
 
   return (
     <div className=" w-full h-screen p-5">
@@ -34,7 +64,18 @@ export default function PageIcon() {
       </div>
 
       {isToggled ? (
-        <div id="chatUi">
+        <div
+          ref={chatRef}
+          id="chatUi"
+          style={{
+            left: `${position.x}px`,
+            top: `${position.y}px`,
+          }}
+          className={`fixed w-14 h-14 rounded-full bg-blue-500 cursor-grab active:cursor-grabbing shadow-lg transition-transform ${
+            isDragging ? "scale-105" : "scale-100"
+          }`}
+          onMouseDown={handleMouseDown}
+        >
           <Chat />
         </div>
       ) : null}
