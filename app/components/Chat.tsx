@@ -60,9 +60,6 @@ export default function Chat() {
       setHoveredEl(target);
     }
 
-    console.log(target);
-    console.log(selectedElements);
-
     const removeHover = () => {
       if (!selectedElements.includes(target)) {
         target.style.border = "";
@@ -200,7 +197,7 @@ export default function Chat() {
               )}
               <p
                 className={`bg-gradient-to-r from-[#334155] to-[#0f172a] text-slate-100 text-sm p-4 rounded-xl max-w-[75%] break-words ${
-                  msg.sender === "user" ? "text-right" : "text-left"
+                  msg.sender === "user" ? "text-left" : "text-left"
                 }`}
               >
                 {msg.content}
@@ -216,7 +213,10 @@ export default function Chat() {
 
           {isLoading && (
             <div className="flex items-center space-x-3">
-              <FaRobot className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full" />
+              <FaRobot
+                color="white"
+                className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
+              />
               <div className="flex space-x-1">
                 <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce delay-150"></div>

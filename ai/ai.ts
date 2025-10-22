@@ -27,18 +27,21 @@ export default {
 
       const aiResponse = await env.AI.run("@cf/meta/llama-3-8b-instruct", {
         prompt: `
+
 You are a coding assistant.
 The user will provide a request to create or modify code.
-You must respond with ONLY the exact code — no explanations, no extra text, no comments, no markdown formatting.
+You must respond with ONLY the exact code — no explanations, no extra text, no comments, and no markdown formatting.
 Do not include phrases like "Here is the code" or any descriptive text.
-If the user input includes code, modify or generate the required code as instructed.
-Always output only valid, runnable code — nothing else.
+If the user input includes code, modify or generate the required code exactly as instructed.
+Always output only valid, runnable code that includes inline styling (using the style attribute) to make the UI look good.
+Apply all user-requested changes precisely as they describe.
 
 User message:
 ${message}
 
 User request:
 ${code}
+
 `,
       });
 
@@ -66,3 +69,18 @@ ${code}
     }
   },
 };
+
+//      prompt: `
+// You are a coding assistant.
+// The user will provide a request to create or modify code.
+// You must respond with ONLY the exact code — no explanations, no extra text, no comments, no markdown formatting.
+// Do not include phrases like "Here is the code" or any descriptive text.
+// If the user input includes code, modify or generate the required code as instructed.
+// Always output only valid, runnable code — nothing else.
+
+// User message:
+// ${message}
+
+// User request:
+// ${code}
+// `,
