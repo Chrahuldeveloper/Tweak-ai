@@ -39,6 +39,7 @@ export default function Chat() {
 
   const hoverHandler = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
+
     if (
       !target ||
       target.hasAttribute("lang") ||
@@ -58,10 +59,25 @@ export default function Chat() {
       target.style.borderRadius = "10px";
       setHoveredEl(target);
     }
+
+    console.log(target);
+    console.log(selectedElements);
+
+    const removeHover = () => {
+      if (!selectedElements.includes(target)) {
+        target.style.border = "";
+        target.style.borderRadius = "";
+      }
+      target.removeEventListener("mouseout", removeHover);
+    };
+
+    target.addEventListener("mouseout", removeHover);
+    setHoveredEl(null);
   };
 
   const clickHandler = (e: MouseEvent) => {
     const target = e.target as HTMLElement;
+
     if (
       !target ||
       target.hasAttribute("lang") ||
