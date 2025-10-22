@@ -20,12 +20,9 @@ export default function Chat() {
     oldCode: HTMLElement,
     newCode: string | HTMLElement | null
   ) => {
-    if (!oldCode || !newCode) {
-      return;
-    }
+    if (!oldCode || !newCode) return;
 
     let newEl: HTMLElement | null = null;
-
     if (typeof newCode === "string") {
       const temp = document.createElement("div");
       temp.innerHTML = newCode.trim();
@@ -33,12 +30,10 @@ export default function Chat() {
     } else if (newCode instanceof HTMLElement) {
       newEl = newCode;
     }
-
     if (!newEl) {
       console.error("No valid element created from newCode.");
       return;
     }
-
     oldCode.replaceWith(newEl);
   };
 
@@ -82,10 +77,7 @@ export default function Chat() {
 
       setChatHistory((prev) => [
         ...prev,
-        {
-          sender: "bot",
-          content: target.outerHTML.toString(),
-        },
+        { sender: "bot", content: target.outerHTML.toString() },
       ]);
     }
   };
@@ -123,7 +115,6 @@ export default function Chat() {
 
   const handleSendRequest = async () => {
     setInputMessage("");
-
     if (selectedElements.length === 0 || !inputMessage.trim()) return;
 
     const selectedEl = selectedElements[selectedElements.length - 1];
@@ -134,13 +125,10 @@ export default function Chat() {
     };
 
     setChatHistory((prev) => [...prev, userMsg]);
-
-    const req = {
-      message: inputMessage,
-      code: selectedEl.outerHTML,
-    };
+    const req = { message: inputMessage, code: selectedEl.outerHTML };
 
     try {
+      setIsLoading(true);
       const sendReq = await fetch(
         "https://tweakai.chrahulofficial.workers.dev",
         {
@@ -148,7 +136,9 @@ export default function Chat() {
           body: JSON.stringify(req),
         }
       );
+
       const data = await sendReq.json();
+      setIsLoading(false);
 
       const botMsg: ChatMessage = {
         sender: "bot",
@@ -156,19 +146,21 @@ export default function Chat() {
       };
 
       setChatHistory((prev) => [...prev, botMsg]);
-      console.log(selectedEl);
-      console.log(botMsg.content);
       insertElementIntoDom(selectedEl, botMsg.content);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
     }
 
     setInputMessage("");
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-96  rounded-xl">
-      <div className="flex justify-between  p-5">
+    <div
+      id="chatUi"
+      className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-96 rounded-xl"
+    >
+      <div className="flex justify-between p-5">
         <div className="text-white flex items-center space-x-2">
           <LiaTelegram color="white" size={20} />
           <h1>Text Editor</h1>
@@ -186,8 +178,8 @@ export default function Chat() {
             >
               {msg.sender === "bot" && (
                 <FaRobot
-                  className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
                   color="white"
+                  className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
                 />
               )}
               <p
@@ -199,12 +191,23 @@ export default function Chat() {
               </p>
               {msg.sender === "user" && (
                 <CgProfile
-                  className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
                   color="white"
+                  className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full"
                 />
               )}
             </div>
           ))}
+
+          {isLoading && (
+            <div className="flex items-center space-x-3">
+              <FaRobot className="bg-gradient-to-r from-[#334155] to-[#0f172a] w-12 h-12 p-2.5 rounded-full" />
+              <div className="flex space-x-1">
+                <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce delay-150"></div>
+                <div className="w-2 h-2 bg-slate-300 rounded-full animate-bounce delay-300"></div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -237,7 +240,9 @@ export default function Chat() {
             onClick={handleSendRequest}
             size={20}
             color="white"
-            className="bg-[#462a8a] p-2 w-10 h-10 rounded-xl cursor-pointer"
+            className={`${
+              isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+            } bg-[#462a8a] p-2 w-10 h-10 rounded-xl`}
           />
         </div>
       </div>
