@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { LiaTelegram } from "react-icons/lia";
 import { FaRobot } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
+import { IoReload } from "react-icons/io5";
 
 interface ChatMessage {
   sender: "user" | "bot";
@@ -168,6 +169,23 @@ export default function Chat() {
     setInputMessage("");
   };
 
+  const handlePressEnter = () => {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && inputMessage.length != 0) {
+        console.log(e.key);
+        handleSendRequest();
+      }
+    });
+  };
+
+  useEffect(() => {
+    handlePressEnter();
+  }, [handlePressEnter]);
+
+  const handleClearChat = () => {
+    setChatHistory([]);
+  };
+
   return (
     <div
       id="chatUi"
@@ -179,7 +197,6 @@ export default function Chat() {
           <h1>Text Editor</h1>
         </div>
       </div>
-
       <div className="bg-black h-[40vh] overflow-y-scroll">
         <div className="flex flex-col space-y-3 p-3">
           {chatHistory.map((msg, index) => (
@@ -256,6 +273,14 @@ export default function Chat() {
             onClick={handleSendRequest}
             size={20}
             color="white"
+            className={`${
+              isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+            } bg-[#462a8a] p-2 w-10 h-10 rounded-xl`}
+          />
+          <IoReload
+            size={20}
+            color="white"
+            onClick={handleClearChat}
             className={`${
               isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
             } bg-[#462a8a] p-2 w-10 h-10 rounded-xl`}
